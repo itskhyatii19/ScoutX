@@ -1,27 +1,21 @@
 {
-  "name": "scoutx",
+  "name": "backend",
   "version": "1.0.0",
-  "private": true,
-  "main": "expo-router/entry",
+  "main": "src/server.ts",
   "scripts": {
-    "start": "expo start",
-    "dev": "expo start",
-    "build": "expo export",
-    "typecheck": "tsc --noEmit"
+    "dev": "ts-node-dev src/server.ts"
   },
   "dependencies": {
-    "expo": "~54.0.0",
-    "expo-router": "~6.0.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-native": "0.81.0",
-    "react-native-safe-area-context": "~5.0.0",
-    "react-native-screens": "~4.0.0",
-    "@tanstack/react-query": "^5.0.0",
-    "zustand": "^5.0.0"
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.5.0"
   },
   "devDependencies": {
-    "typescript": "~5.0.0",
-    "@types/react": "~19.0.0"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^6.0.3"
   }
 }
