@@ -1,28 +1,61 @@
 import { Request, Response } from "express";
 import User from "../models/User";
+import { asyncHandler } from "../utils/asyncHandler";
+import { signToken } from "../utils/jwt";
 
-export const signup = async (req: Request, res: Response) => {
-  try {
-    const { name, email, password } = req.body;
+const authResponse = (user: any) => ({
+  token: signToken(user),
+  user: user.toJSON(),
+});
 
-    const userExists = await User.findOne({ email });
+export const signup = asyncHandler(async (req: Request, res: Response) => {
+  const { name, email, password, role, sport, country, city, position, club } = req.body;
 
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const user = await User.create({
-      name,
-      email,
-      password,
-    });
-
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "Name, email and password are required" });
   }
-};
 
-export const login = async (req: Request, res: Response) => {
-  res.json({ message: "Login route" });
-};
+  const userExists = await User.findOne({ email });
+
+  if (userExists) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role,
+    sport,
+    country,
+    city,
+    position,
+    club,
+  });
+
+  return res.status(201).json(authResponse(user));
+});
+
+export const login = asyncHandler(async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user || !(await user.comparePassword(password))) {
+    return res.status(401).json({ message: "Invalid email or password" });
+  }
+
+  return res.json(authResponse(user));
+});
+
+export const logout = asyncHandler(async (_req: Request, res: Response) => {
+  return res.json({ message: "Logged out" });
+});
+
+export const me = asyncHandler(async (req: Request, res: Response) => {
+  return res.json({ user: req.user });
+});

@@ -12,3 +12,4 @@ pnpm-lock.yaml
 .expo/
 dist/
 web-build/
+backend/uploads/

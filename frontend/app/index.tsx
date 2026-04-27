@@ -1,27 +1,26 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { router } from "expo-router";
+import { useEffect } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { colors } from "@/constants/theme";
+import { useAuth } from "@/store/auth";
 
 export default function HomeScreen() {
+  const { loading, user } = useAuth();
+
+  useEffect(() => {
+    if (!loading) {
+      router.replace(user ? "/(tabs)" : "/login");
+    }
+  }, [loading, user]);
+
   return (
     <View style={styles.container}>
+      <View style={styles.mark}>
+        <Text style={styles.markText}>SX</Text>
+      </View>
       <Text style={styles.logo}>ScoutX</Text>
-      <Text style={styles.subtitle}>
-        Discover tournaments, track insights, and grow your network.
-      </Text>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("/login")}
-      >
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.button, styles.secondary]}
-        onPress={() => router.push("/signup")}
-      >
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
+      <Text style={styles.subtitle}>The scouting network for the next breakout player.</Text>
+      <ActivityIndicator color={colors.accent} />
     </View>
   );
 }
@@ -29,37 +28,36 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F5EF",
+    backgroundColor: colors.ink,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 24,
+  },
+  mark: {
+    width: 92,
+    height: 92,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.accent,
+    marginBottom: 20,
+  },
+  markText: {
+    color: colors.darkText,
+    fontSize: 34,
+    fontWeight: "900",
   },
   logo: {
-    fontSize: 42,
-    fontWeight: "bold",
-    color: "#1B4332",
+    fontSize: 44,
+    fontWeight: "900",
+    color: colors.text,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
     textAlign: "center",
-    color: "#555",
-    marginBottom: 40,
-  },
-  button: {
-    width: "100%",
-    backgroundColor: "#1B4332",
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
-    alignItems: "center",
-  },
-  secondary: {
-    backgroundColor: "#2D6A4F",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
+    color: colors.muted,
+    marginBottom: 30,
+    maxWidth: 280,
   },
 });

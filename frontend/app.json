@@ -1,6 +1,24 @@
 {
   "expo": {
     "name": "ScoutX",
-    "slug": "scoutx"
+    "slug": "scoutx",
+    "scheme": "scoutx",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": false,
+    "extra": {
+      "apiUrl": "http://192.168.1.9:5000/api"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.scoutx.app"
+    },
+    "android": {
+      "package": "com.scoutx.app"
+    }
   }
 }
