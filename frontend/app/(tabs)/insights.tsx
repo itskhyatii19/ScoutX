@@ -1,54 +1,22 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, spacing } from "@/constants/theme";
 
-export default function ProfileScreen() {
+export default function InsightsScreen() {
   return (
     <View style={styles.screen}>
-      {/* Top Green Background Header */}
-      <View style={styles.topHeader}>
-        <View style={styles.headerTopRow}>
-          <Text style={styles.headerTitle}>Profile</Text>
-          <TouchableOpacity>
-            <Ionicons name="pencil-outline" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.profileInfoRow}>
-          <Image 
-            source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }} 
-            style={styles.avatar} 
-          />
-          <View style={styles.profileTextInfo}>
-            <View style={styles.nameRow}>
-              <Text style={styles.name}>Athlete</Text>
-              <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" style={{ marginLeft: 6 }} />
-            </View>
-            <Text style={styles.subName}>• Sport • Country</Text>
-          </View>
-        </View>
-      </View>
-
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        
-        {/* Stats Row */}
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>4</Text>
-            <Text style={styles.statLabel}>Global Rank</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>12</Text>
-            <Text style={styles.statLabel}>Tournaments</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>86</Text>
-            <Text style={styles.statLabel}>Connections</Text>
-          </View>
-        </View>
+        {/* Header */}
+        <Text style={styles.headerTitle}>Insights</Text>
 
-        {/* Performance Overview */}
-        <Text style={styles.sectionTitle}>Performance Overview</Text>
+        {/* Upload Button */}
+        <TouchableOpacity style={styles.uploadButton}>
+          <Ionicons name="cloud-upload-outline" size={24} color="#FFFFFF" style={styles.uploadIcon} />
+          <Text style={styles.uploadButtonText}>Upload performance video</Text>
+        </TouchableOpacity>
+
+        {/* Performance Trend */}
+        <Text style={styles.sectionTitle}>Performance Trend</Text>
         <View style={styles.chartCard}>
           {/* Mock Chart Area */}
           <View style={styles.chartMock}>
@@ -59,6 +27,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.chartContent}>
               <View style={styles.chartLine}>
+                {/* SVG Mocking a line chart or just a placeholder shape */}
                 <View style={[styles.dataPoint, { bottom: "50%", left: "0%" }]} />
                 <View style={[styles.dataLine, { bottom: "58%", left: "0%", width: "22%", transform: [{ rotate: "-20deg" }] }]} />
                 
@@ -85,10 +54,43 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Log Out Button */}
-        <TouchableOpacity style={styles.logoutButton}>
-          <Text style={styles.logoutButtonText}>Log Out</Text>
-        </TouchableOpacity>
+        {/* AI Analysis */}
+        <Text style={styles.sectionTitle}>AI Analysis</Text>
+        <View style={styles.analysisCard}>
+          <View style={styles.analysisItem}>
+            <View style={[styles.analysisIconContainer, { backgroundColor: colors.successBackground }]}>
+              <Ionicons name="arrow-up" size={18} color={colors.accent} />
+            </View>
+            <View style={styles.analysisTextContainer}>
+              <Text style={styles.analysisItemTitle}>Strengths</Text>
+              <Text style={styles.analysisItemText}>Explosive acceleration in first 10m.</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.analysisItem}>
+            <View style={[styles.analysisIconContainer, { backgroundColor: colors.dangerBackground }]}>
+              <Ionicons name="arrow-down" size={18} color={colors.danger} />
+            </View>
+            <View style={styles.analysisTextContainer}>
+              <Text style={styles.analysisItemTitle}>Weaknesses</Text>
+              <Text style={styles.analysisItemText}>Arm drive consistency drops after 30m.</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.analysisItem}>
+            <View style={[styles.analysisIconContainer, { backgroundColor: colors.infoBackground }]}>
+              <Ionicons name="information" size={20} color="#B8860B" />
+            </View>
+            <View style={styles.analysisTextContainer}>
+              <Text style={styles.analysisItemTitle}>Suggestions</Text>
+              <Text style={styles.analysisItemText}>Focus on core stability drills to maintain form.</Text>
+            </View>
+          </View>
+        </View>
 
       </ScrollView>
     </View>
@@ -100,91 +102,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.panel,
   },
-  topHeader: {
-    backgroundColor: colors.accent,
+  content: {
+    padding: spacing.lg,
     paddingTop: 60,
-    paddingBottom: 40,
-    paddingHorizontal: spacing.lg,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-  },
-  headerTopRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 32,
+    paddingBottom: 100,
   },
   headerTitle: {
     fontSize: 34,
     fontWeight: "900",
-    color: "#FFFFFF",
-    fontFamily: "serif",
-  },
-  profileInfoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-  },
-  profileTextInfo: {
-    marginLeft: 20,
-  },
-  nameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: "#FFFFFF",
-    fontFamily: "serif",
-  },
-  subName: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 14,
-    marginTop: 4,
-    fontWeight: "600",
-  },
-  content: {
-    padding: spacing.lg,
-    paddingTop: 32,
-    paddingBottom: 100,
-  },
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 32,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 16,
-    alignItems: "center",
-    marginHorizontal: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.02)",
-  },
-  statValue: {
-    fontSize: 22,
-    fontWeight: "800",
     color: colors.darkText,
-    marginBottom: 4,
+    fontFamily: "serif",
+    marginBottom: 24,
   },
-  statLabel: {
-    fontSize: 12,
-    color: colors.muted,
-    fontWeight: "500",
+  uploadButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 18,
+    marginBottom: 32,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  uploadIcon: {
+    marginRight: 12,
+  },
+  uploadButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
   },
   sectionTitle: {
     fontSize: 20,
@@ -254,11 +204,10 @@ const styles = StyleSheet.create({
     borderTopColor: colors.line,
     paddingTop: 10,
   },
-  logoutButton: {
+  analysisCard: {
     backgroundColor: colors.card,
     borderRadius: 16,
-    paddingVertical: 18,
-    alignItems: "center",
+    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -267,9 +216,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.02)",
   },
-  logoutButtonText: {
-    color: colors.danger,
+  analysisItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingVertical: 8,
+  },
+  analysisIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+  },
+  analysisTextContainer: {
+    flex: 1,
+  },
+  analysisItemTitle: {
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "800",
+    color: colors.darkText,
+    marginBottom: 4,
+  },
+  analysisItemText: {
+    fontSize: 14,
+    color: colors.muted,
+    lineHeight: 20,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.line,
+    marginVertical: 12,
   },
 });

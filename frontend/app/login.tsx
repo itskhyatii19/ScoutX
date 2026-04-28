@@ -61,7 +61,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.panel,
     padding: 24,
     justifyContent: "center",
   },
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.line,
-    backgroundColor: colors.panel,
+    backgroundColor: colors.card,
     color: colors.text,
     paddingHorizontal: 16,
     fontSize: 16,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   primaryText: {
-    color: colors.darkText,
+    color: colors.panelSoft,
     fontSize: 16,
     fontWeight: "900",
   },

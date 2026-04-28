@@ -28,7 +28,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.panel,
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   markText: {
-    color: colors.darkText,
+    color: colors.panelSoft,
     fontSize: 34,
     fontWeight: "900",
   },

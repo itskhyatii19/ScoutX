@@ -62,7 +62,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.panel,
   },
   content: {
     flexGrow: 1,
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.line,
-    backgroundColor: colors.panel,
+    backgroundColor: colors.card,
     color: colors.text,
     paddingHorizontal: 16,
     fontSize: 16,
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.panel,
+    backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.line,
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   segmentTextActive: {
-    color: colors.darkText,
+    color: colors.panelSoft,
   },
   primaryButton: {
     minHeight: 56,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   primaryText: {
-    color: colors.darkText,
+    color: colors.panelSoft,
     fontSize: 16,
     fontWeight: "900",
   },
