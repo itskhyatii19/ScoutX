@@ -10,6 +10,7 @@ export const colors = {
   accent: "#165532", // Primary dark green
   accentDark: "#103E24",
   line: "rgba(0,0,0,0.06)",
+  softBorder: "#E7DDC9",
   danger: "#D34040",
   successBackground: "#E6F0EB",
   dangerBackground: "#FAECEC",

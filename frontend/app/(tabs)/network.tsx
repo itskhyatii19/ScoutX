@@ -1,51 +1,66 @@
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Avatar } from "@/components/Avatar";
+import { networkUsers } from "@/constants/demoData";
 import { colors, spacing } from "@/constants/theme";
+import { api, User } from "@/services/api";
 
 const TABS = ["Discover", "Connections", "Messages"];
 
-const NETWORK_USERS = [
-  { id: "1", name: "Marcus Aurelius", role: "Coach", sport: "Basketball", image: "https://randomuser.me/api/portraits/men/32.jpg" },
-  { id: "2", name: "Serena Vance", role: "Athlete", sport: "Tennis", image: "https://randomuser.me/api/portraits/women/44.jpg" },
-  { id: "3", name: "David Chen", role: "Scout", sport: "Football", image: "https://randomuser.me/api/portraits/men/46.jpg" },
-  { id: "4", name: "Elena Rostova", role: "Athlete", sport: "Athletics", image: "https://randomuser.me/api/portraits/women/65.jpg" },
-  { id: "5", name: "Michael Phelps Jr.", role: "Athlete", sport: "Swimming", image: "https://randomuser.me/api/portraits/men/22.jpg" },
-  { id: "6", name: "James Harden", role: "Athlete", sport: "Basketball", image: "https://randomuser.me/api/portraits/men/11.jpg" },
-];
-
 export default function NetworkScreen() {
   const [activeTab, setActiveTab] = useState("Discover");
+  const [profiles, setProfiles] = useState<User[]>(networkUsers);
+
+  useEffect(() => {
+    let mounted = true;
+
+    api<{ users: User[] }>("/profile/discover")
+      .then((response) => {
+        if (mounted && response.users.length) {
+          setProfiles(response.users);
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setProfiles(networkUsers);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const visibleProfiles = activeTab === "Discover" ? profiles : networkUsers.slice(0, 3);
 
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <Text style={styles.headerTitle}>Network</Text>
 
-        {/* Custom Tabs */}
         <View style={styles.tabContainer}>
-          {TABS.map(tab => (
-            <TouchableOpacity 
-              key={tab} 
+          {TABS.map((tab) => (
+            <TouchableOpacity
+              key={tab}
               style={[styles.tabButton, activeTab === tab && styles.activeTabButton]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-                {tab}
-              </Text>
+              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>{tab}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* User List */}
         <View style={styles.list}>
-          {NETWORK_USERS.map((user) => (
-            <View key={user.id} style={styles.userCard}>
-              <Image source={{ uri: user.image }} style={styles.avatar} />
+          {visibleProfiles.map((user) => (
+            <View key={user._id} style={styles.userCard}>
+              <Avatar name={user.name} uri={user.avatar} size={48} />
               <View style={styles.userInfo}>
-                <Text style={styles.userName}>{user.name}</Text>
-                <Text style={styles.userDetails}>{user.role} • {user.sport}</Text>
+                <Text style={styles.userName} numberOfLines={1}>
+                  {user.name}
+                </Text>
+                <Text style={styles.userDetails} numberOfLines={1}>
+                  {user.position || user.role} - {user.sport}
+                </Text>
               </View>
               <TouchableOpacity style={styles.followButton}>
                 <Text style={styles.followButtonText}>Follow</Text>
@@ -53,7 +68,6 @@ export default function NetworkScreen() {
             </View>
           ))}
         </View>
-
       </ScrollView>
     </View>
   );
@@ -61,100 +75,87 @@ export default function NetworkScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
     backgroundColor: colors.panel,
+    flex: 1,
   },
   content: {
     padding: spacing.lg,
-    paddingTop: 60,
-    paddingBottom: 100,
+    paddingBottom: 112,
+    paddingTop: 70,
   },
   headerTitle: {
-    fontSize: 34,
-    fontWeight: "900",
     color: colors.darkText,
     fontFamily: "serif",
-    marginBottom: 24,
+    fontSize: 34,
+    fontWeight: "900",
+    marginBottom: 18,
   },
   tabContainer: {
-    flexDirection: "row",
     backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 24,
+    borderColor: colors.softBorder,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.04)",
+    flexDirection: "row",
+    marginBottom: 16,
+    padding: 4,
   },
   tabButton: {
-    flex: 1,
-    paddingVertical: 10,
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 6,
+    flex: 1,
+    paddingVertical: 9,
   },
   activeTabButton: {
     backgroundColor: colors.panel,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   tabText: {
+    color: colors.muted,
     fontSize: 14,
     fontWeight: "600",
-    color: colors.muted,
   },
   activeTabText: {
     color: colors.darkText,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   list: {
-    gap: 16,
+    gap: 14,
   },
   userCard: {
-    flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.card,
-    padding: 16,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: colors.softBorder,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.02)",
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#E1E1E1",
+    flexDirection: "row",
+    minHeight: 72,
+    padding: 14,
   },
   userInfo: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: 14,
+    paddingRight: 10,
   },
   userName: {
-    fontSize: 16,
-    fontWeight: "800",
     color: colors.darkText,
     fontFamily: "serif",
+    fontSize: 16,
+    fontWeight: "800",
     marginBottom: 4,
   },
   userDetails: {
-    fontSize: 13,
     color: colors.muted,
+    fontSize: 13,
+    textTransform: "capitalize",
   },
   followButton: {
     backgroundColor: colors.accent,
-    paddingHorizontal: 20,
+    borderRadius: 18,
+    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
   },
   followButtonText: {
     color: "#FFFFFF",
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: "800",
   },
 });

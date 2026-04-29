@@ -1,5 +1,6 @@
 import Constants from "expo-constants";
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 
 export type User = {
   _id: string;
@@ -35,11 +36,36 @@ export type Post = {
 const configuredUrl = Constants.expoConfig?.extra?.apiUrl as string | undefined;
 export const API_URL = configuredUrl || "http://192.168.1.9:5000/api";
 const TOKEN_KEY = "scoutx_token";
+const isWeb = typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+
+const webStore = {
+  get: async (key: string) => {
+    if (!isWeb) {
+      return null;
+    }
+    return window.localStorage.getItem(key);
+  },
+  set: async (key: string, value: string) => {
+    if (!isWeb) {
+      return;
+    }
+    window.localStorage.setItem(key, value);
+  },
+  delete: async (key: string) => {
+    if (!isWeb) {
+      return;
+    }
+    window.localStorage.removeItem(key);
+  },
+};
 
 export const tokenStore = {
-  get: () => SecureStore.getItemAsync(TOKEN_KEY),
-  set: (token: string) => SecureStore.setItemAsync(TOKEN_KEY, token),
-  clear: () => SecureStore.deleteItemAsync(TOKEN_KEY),
+  get: () =>
+    isWeb ? webStore.get(TOKEN_KEY) : SecureStore.getItemAsync(TOKEN_KEY),
+  set: (token: string) =>
+    isWeb ? webStore.set(TOKEN_KEY, token) : SecureStore.setItemAsync(TOKEN_KEY, token),
+  clear: () =>
+    isWeb ? webStore.delete(TOKEN_KEY) : SecureStore.deleteItemAsync(TOKEN_KEY),
 };
 
 type ApiOptions = RequestInit & {

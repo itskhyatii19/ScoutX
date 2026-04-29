@@ -5,14 +5,15 @@
     "scheme": "scoutx",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": false,
     "extra": {
       "apiUrl": "http://192.168.1.9:5000/api"
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font"
     ],
     "ios": {
       "bundleIdentifier": "com.scoutx.app"

@@ -25,6 +25,8 @@ export function Avatar({ name, uri, size = 42 }: Props) {
 const styles = StyleSheet.create({
   avatar: {
     backgroundColor: colors.panelSoft,
+    borderColor: "#FFFFFF",
+    borderWidth: 1,
   },
   fallback: {
     alignItems: "center",

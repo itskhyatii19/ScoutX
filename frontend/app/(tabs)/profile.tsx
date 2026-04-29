@@ -1,37 +1,44 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Avatar } from "@/components/Avatar";
+import { LineChart } from "@/components/LineChart";
+import { performanceLabels, performanceValues } from "@/constants/demoData";
 import { colors, spacing } from "@/constants/theme";
+import { useAuth } from "@/store/auth";
 
 export default function ProfileScreen() {
+  const { signOut, user } = useAuth();
+  const athleteName = user?.name || "Athlete";
+  const sport = user?.sport || "Sport";
+  const country = user?.country || "Country";
+
   return (
     <View style={styles.screen}>
-      {/* Top Green Background Header */}
       <View style={styles.topHeader}>
         <View style={styles.headerTopRow}>
           <Text style={styles.headerTitle}>Profile</Text>
           <TouchableOpacity>
-            <Ionicons name="pencil-outline" size={24} color="#FFFFFF" />
+            <Ionicons name="pencil-outline" size={25} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
 
         <View style={styles.profileInfoRow}>
-          <Image 
-            source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }} 
-            style={styles.avatar} 
-          />
+          <Avatar name={athleteName} uri={user?.avatar} size={74} />
           <View style={styles.profileTextInfo}>
             <View style={styles.nameRow}>
-              <Text style={styles.name}>Athlete</Text>
-              <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" style={{ marginLeft: 6 }} />
+              <Text style={styles.name} numberOfLines={1}>
+                {athleteName}
+              </Text>
+              <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" style={styles.checkIcon} />
             </View>
-            <Text style={styles.subName}>• Sport • Country</Text>
+            <Text style={styles.subName} numberOfLines={1}>
+              - {sport} - {country}
+            </Text>
           </View>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        
-        {/* Stats Row */}
         <View style={styles.statsRow}>
           <View style={styles.statCard}>
             <Text style={styles.statValue}>4</Text>
@@ -42,54 +49,19 @@ export default function ProfileScreen() {
             <Text style={styles.statLabel}>Tournaments</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>86</Text>
+            <Text style={styles.statValue}>{user?.following?.length || 86}</Text>
             <Text style={styles.statLabel}>Connections</Text>
           </View>
         </View>
 
-        {/* Performance Overview */}
         <Text style={styles.sectionTitle}>Performance Overview</Text>
         <View style={styles.chartCard}>
-          {/* Mock Chart Area */}
-          <View style={styles.chartMock}>
-            <View style={styles.yAxis}>
-              {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0].map(val => (
-                <Text key={val} style={styles.axisLabel}>{val}</Text>
-              ))}
-            </View>
-            <View style={styles.chartContent}>
-              <View style={styles.chartLine}>
-                <View style={[styles.dataPoint, { bottom: "50%", left: "0%" }]} />
-                <View style={[styles.dataLine, { bottom: "58%", left: "0%", width: "22%", transform: [{ rotate: "-20deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "66%", left: "20%" }]} />
-                <View style={[styles.dataLine, { bottom: "63%", left: "20%", width: "22%", transform: [{ rotate: "10deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "61%", left: "40%" }]} />
-                <View style={[styles.dataLine, { bottom: "71%", left: "40%", width: "22%", transform: [{ rotate: "-30deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "81%", left: "60%" }]} />
-                <View style={[styles.dataLine, { bottom: "78%", left: "60%", width: "22%", transform: [{ rotate: "10deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "76%", left: "80%" }]} />
-                <View style={[styles.dataLine, { bottom: "83%", left: "80%", width: "22%", transform: [{ rotate: "-25deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "91%", left: "100%" }]} />
-              </View>
-              <View style={styles.xAxis}>
-                {["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map(month => (
-                  <Text key={month} style={styles.axisLabel}>{month}</Text>
-                ))}
-              </View>
-            </View>
-          </View>
+          <LineChart values={performanceValues} labels={performanceLabels} height={150} />
         </View>
 
-        {/* Log Out Button */}
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
-
       </ScrollView>
     </View>
   );
@@ -97,179 +69,117 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
     backgroundColor: colors.panel,
+    flex: 1,
   },
   topHeader: {
     backgroundColor: colors.accent,
-    paddingTop: 60,
-    paddingBottom: 40,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+    paddingBottom: 34,
     paddingHorizontal: spacing.lg,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    paddingTop: 70,
   },
   headerTopRow: {
+    alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 28,
   },
   headerTitle: {
-    fontSize: 34,
-    fontWeight: "900",
     color: "#FFFFFF",
     fontFamily: "serif",
+    fontSize: 32,
+    fontWeight: "900",
   },
   profileInfoRow: {
-    flexDirection: "row",
     alignItems: "center",
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
+    flexDirection: "row",
   },
   profileTextInfo: {
-    marginLeft: 20,
+    flex: 1,
+    marginLeft: 18,
   },
   nameRow: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
   },
   name: {
+    color: "#FFFFFF",
+    flexShrink: 1,
+    fontFamily: "serif",
     fontSize: 24,
     fontWeight: "800",
-    color: "#FFFFFF",
-    fontFamily: "serif",
+  },
+  checkIcon: {
+    marginLeft: 6,
   },
   subName: {
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(255,255,255,0.82)",
     fontSize: 14,
+    fontWeight: "700",
     marginTop: 4,
-    fontWeight: "600",
   },
   content: {
     padding: spacing.lg,
-    paddingTop: 32,
-    paddingBottom: 100,
+    paddingBottom: 112,
+    paddingTop: 20,
   },
   statsRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 32,
+    gap: 12,
+    marginBottom: 28,
   },
   statCard: {
-    flex: 1,
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 16,
     alignItems: "center",
-    marginHorizontal: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: colors.card,
+    borderColor: colors.softBorder,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.02)",
+    flex: 1,
+    justifyContent: "center",
+    minHeight: 72,
+    padding: 10,
   },
   statValue: {
+    color: colors.darkText,
     fontSize: 22,
     fontWeight: "800",
-    color: colors.darkText,
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 12,
     color: colors.muted,
+    fontSize: 11,
     fontWeight: "500",
+    textAlign: "center",
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
     color: colors.darkText,
     fontFamily: "serif",
-    marginBottom: 16,
+    fontSize: 19,
+    fontWeight: "800",
+    marginBottom: 14,
   },
   chartCard: {
     backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 32,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: colors.softBorder,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.02)",
-  },
-  chartMock: {
-    flexDirection: "row",
-    height: 200,
-  },
-  yAxis: {
-    justifyContent: "space-between",
-    paddingRight: 10,
-    borderRightWidth: 1,
-    borderRightColor: colors.line,
-  },
-  axisLabel: {
-    fontSize: 10,
-    color: colors.muted,
-  },
-  chartContent: {
-    flex: 1,
-    paddingLeft: 10,
-    justifyContent: "flex-end",
-  },
-  chartLine: {
-    flex: 1,
-    position: "relative",
-    marginBottom: 10,
-  },
-  dataPoint: {
-    position: "absolute",
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.accent,
-    marginLeft: -3,
-    marginBottom: -3,
-    zIndex: 2,
-  },
-  dataLine: {
-    position: "absolute",
-    height: 2,
-    backgroundColor: colors.accent,
-    transformOrigin: "left center",
-    zIndex: 1,
-  },
-  xAxis: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderTopColor: colors.line,
-    paddingTop: 10,
+    marginBottom: 28,
+    padding: 18,
   },
   logoutButton: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    paddingVertical: 18,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: colors.panel,
+    borderColor: colors.softBorder,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.02)",
+    minHeight: 48,
+    justifyContent: "center",
   },
   logoutButtonText: {
     color: colors.danger,
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "800",
   },
 });

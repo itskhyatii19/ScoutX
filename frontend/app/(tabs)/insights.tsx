@@ -1,251 +1,206 @@
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { useState } from "react";
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { LineChart } from "@/components/LineChart";
+import { performanceLabels, performanceValues } from "@/constants/demoData";
 import { colors, spacing } from "@/constants/theme";
+import { api } from "@/services/api";
 
 export default function InsightsScreen() {
+  const [uploading, setUploading] = useState(false);
+
+  async function uploadPerformanceVideo() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["videos", "images"],
+      quality: 0.8,
+    });
+
+    if (result.canceled) {
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const media = result.assets[0];
+      const form = new FormData();
+
+      form.append("caption", "Performance video uploaded for AI analysis.");
+      form.append("sport", "Athletics");
+      form.append("location", "Training");
+      form.append("tags", "performance, analysis");
+      form.append("media", {
+        uri: media.uri,
+        name: media.fileName || "performance-upload.mp4",
+        type: media.mimeType || "video/mp4",
+      } as unknown as Blob);
+
+      await api("/posts", { method: "POST", body: form });
+      Alert.alert("Uploaded", "Your performance video is ready for analysis.");
+    } catch (error) {
+      Alert.alert("Upload failed", error instanceof Error ? error.message : "Try again");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Header */}
         <Text style={styles.headerTitle}>Insights</Text>
 
-        {/* Upload Button */}
-        <TouchableOpacity style={styles.uploadButton}>
+        <TouchableOpacity disabled={uploading} style={[styles.uploadButton, uploading && styles.disabled]} onPress={uploadPerformanceVideo}>
           <Ionicons name="cloud-upload-outline" size={24} color="#FFFFFF" style={styles.uploadIcon} />
-          <Text style={styles.uploadButtonText}>Upload performance video</Text>
+          <Text style={styles.uploadButtonText}>{uploading ? "Uploading..." : "Upload performance video"}</Text>
         </TouchableOpacity>
 
-        {/* Performance Trend */}
         <Text style={styles.sectionTitle}>Performance Trend</Text>
         <View style={styles.chartCard}>
-          {/* Mock Chart Area */}
-          <View style={styles.chartMock}>
-            <View style={styles.yAxis}>
-              {[100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0].map(val => (
-                <Text key={val} style={styles.axisLabel}>{val}</Text>
-              ))}
-            </View>
-            <View style={styles.chartContent}>
-              <View style={styles.chartLine}>
-                {/* SVG Mocking a line chart or just a placeholder shape */}
-                <View style={[styles.dataPoint, { bottom: "50%", left: "0%" }]} />
-                <View style={[styles.dataLine, { bottom: "58%", left: "0%", width: "22%", transform: [{ rotate: "-20deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "66%", left: "20%" }]} />
-                <View style={[styles.dataLine, { bottom: "63%", left: "20%", width: "22%", transform: [{ rotate: "10deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "61%", left: "40%" }]} />
-                <View style={[styles.dataLine, { bottom: "71%", left: "40%", width: "22%", transform: [{ rotate: "-30deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "81%", left: "60%" }]} />
-                <View style={[styles.dataLine, { bottom: "78%", left: "60%", width: "22%", transform: [{ rotate: "10deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "76%", left: "80%" }]} />
-                <View style={[styles.dataLine, { bottom: "83%", left: "80%", width: "22%", transform: [{ rotate: "-25deg" }] }]} />
-                
-                <View style={[styles.dataPoint, { bottom: "91%", left: "100%" }]} />
-              </View>
-              <View style={styles.xAxis}>
-                {["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map(month => (
-                  <Text key={month} style={styles.axisLabel}>{month}</Text>
-                ))}
-              </View>
-            </View>
-          </View>
+          <LineChart values={performanceValues} labels={performanceLabels} height={160} />
         </View>
 
-        {/* AI Analysis */}
         <Text style={styles.sectionTitle}>AI Analysis</Text>
         <View style={styles.analysisCard}>
-          <View style={styles.analysisItem}>
-            <View style={[styles.analysisIconContainer, { backgroundColor: colors.successBackground }]}>
-              <Ionicons name="arrow-up" size={18} color={colors.accent} />
-            </View>
-            <View style={styles.analysisTextContainer}>
-              <Text style={styles.analysisItemTitle}>Strengths</Text>
-              <Text style={styles.analysisItemText}>Explosive acceleration in first 10m.</Text>
-            </View>
-          </View>
-
+          <AnalysisRow
+            icon="arrow-up"
+            iconColor={colors.accent}
+            iconBackground={colors.successBackground}
+            title="Strengths"
+            text="Explosive acceleration in first 10m."
+          />
           <View style={styles.divider} />
-
-          <View style={styles.analysisItem}>
-            <View style={[styles.analysisIconContainer, { backgroundColor: colors.dangerBackground }]}>
-              <Ionicons name="arrow-down" size={18} color={colors.danger} />
-            </View>
-            <View style={styles.analysisTextContainer}>
-              <Text style={styles.analysisItemTitle}>Weaknesses</Text>
-              <Text style={styles.analysisItemText}>Arm drive consistency drops after 30m.</Text>
-            </View>
-          </View>
-
+          <AnalysisRow
+            icon="arrow-down"
+            iconColor={colors.danger}
+            iconBackground={colors.dangerBackground}
+            title="Weaknesses"
+            text="Arm drive consistency drops after 30m."
+          />
           <View style={styles.divider} />
-
-          <View style={styles.analysisItem}>
-            <View style={[styles.analysisIconContainer, { backgroundColor: colors.infoBackground }]}>
-              <Ionicons name="information" size={20} color="#B8860B" />
-            </View>
-            <View style={styles.analysisTextContainer}>
-              <Text style={styles.analysisItemTitle}>Suggestions</Text>
-              <Text style={styles.analysisItemText}>Focus on core stability drills to maintain form.</Text>
-            </View>
-          </View>
+          <AnalysisRow
+            icon="information"
+            iconColor="#B8860B"
+            iconBackground={colors.infoBackground}
+            title="Suggestions"
+            text="Focus on core stability drills to maintain form."
+          />
         </View>
-
       </ScrollView>
+    </View>
+  );
+}
+
+type AnalysisRowProps = {
+  icon: keyof typeof Ionicons.glyphMap;
+  iconBackground: string;
+  iconColor: string;
+  text: string;
+  title: string;
+};
+
+function AnalysisRow({ icon, iconBackground, iconColor, text, title }: AnalysisRowProps) {
+  return (
+    <View style={styles.analysisItem}>
+      <View style={[styles.analysisIconContainer, { backgroundColor: iconBackground }]}>
+        <Ionicons name={icon} size={18} color={iconColor} />
+      </View>
+      <View style={styles.analysisTextContainer}>
+        <Text style={styles.analysisItemTitle}>{title}</Text>
+        <Text style={styles.analysisItemText}>{text}</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
     backgroundColor: colors.panel,
+    flex: 1,
   },
   content: {
     padding: spacing.lg,
-    paddingTop: 60,
-    paddingBottom: 100,
+    paddingBottom: 112,
+    paddingTop: 70,
   },
   headerTitle: {
-    fontSize: 34,
-    fontWeight: "900",
     color: colors.darkText,
     fontFamily: "serif",
-    marginBottom: 24,
+    fontSize: 34,
+    fontWeight: "900",
+    marginBottom: 20,
   },
   uploadButton: {
-    backgroundColor: colors.accent,
-    borderRadius: 16,
-    flexDirection: "row",
     alignItems: "center",
+    backgroundColor: colors.accent,
+    borderRadius: 8,
+    flexDirection: "row",
     justifyContent: "center",
-    paddingVertical: 18,
-    marginBottom: 32,
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    marginBottom: 30,
+    minHeight: 52,
+  },
+  disabled: {
+    opacity: 0.6,
   },
   uploadIcon: {
-    marginRight: 12,
+    marginRight: 10,
   },
   uploadButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
     color: colors.darkText,
     fontFamily: "serif",
-    marginBottom: 16,
+    fontSize: 20,
+    fontWeight: "800",
+    marginBottom: 14,
   },
   chartCard: {
     backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 32,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: colors.softBorder,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.02)",
-  },
-  chartMock: {
-    flexDirection: "row",
-    height: 200,
-  },
-  yAxis: {
-    justifyContent: "space-between",
-    paddingRight: 10,
-    borderRightWidth: 1,
-    borderRightColor: colors.line,
-  },
-  axisLabel: {
-    fontSize: 10,
-    color: colors.muted,
-  },
-  chartContent: {
-    flex: 1,
-    paddingLeft: 10,
-    justifyContent: "flex-end",
-  },
-  chartLine: {
-    flex: 1,
-    position: "relative",
-    marginBottom: 10,
-  },
-  dataPoint: {
-    position: "absolute",
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.accent,
-    marginLeft: -3,
-    marginBottom: -3,
-    zIndex: 2,
-  },
-  dataLine: {
-    position: "absolute",
-    height: 2,
-    backgroundColor: colors.accent,
-    transformOrigin: "left center",
-    zIndex: 1,
-  },
-  xAxis: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderTopColor: colors.line,
-    paddingTop: 10,
+    marginBottom: 30,
+    padding: 18,
   },
   analysisCard: {
     backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: colors.softBorder,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.02)",
+    padding: 16,
   },
   analysisItem: {
-    flexDirection: "row",
     alignItems: "flex-start",
-    paddingVertical: 8,
+    flexDirection: "row",
+    paddingVertical: 2,
   },
   analysisIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
     alignItems: "center",
+    borderRadius: 18,
+    height: 36,
     justifyContent: "center",
     marginRight: 16,
+    width: 36,
   },
   analysisTextContainer: {
     flex: 1,
   },
   analysisItemTitle: {
+    color: colors.darkText,
     fontSize: 16,
     fontWeight: "800",
-    color: colors.darkText,
     marginBottom: 4,
   },
   analysisItemText: {
-    fontSize: 14,
     color: colors.muted,
+    fontSize: 14,
     lineHeight: 20,
   },
   divider: {
+    backgroundColor: colors.softBorder,
     height: 1,
-    backgroundColor: colors.line,
-    marginVertical: 12,
+    marginVertical: 14,
   },
 });
